@@ -2,6 +2,7 @@ package dev.echo.utils.general;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -13,7 +14,8 @@ import java.util.List;
 public class Region {
 
     @Getter
-    private final Location min,max;
+    @Setter
+    private Location min,max;
     private String world;
     private Vector minV, maxV;
 
@@ -31,7 +33,8 @@ public class Region {
         minV = new Vector(xPos1,yPos1,zPos1);
         maxV = new Vector(xPos2,yPos2,zPos2);
     }
-
+    public Region() {
+    }
     public boolean containsLocation(Location location){
 
         return location.toVector().isInAABB(minV, maxV);

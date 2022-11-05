@@ -1,4 +1,4 @@
-package dev.echo.utils.spigot.api;
+package dev.echo.utils.spigot.api.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,20 +24,13 @@ public @interface Command {
     
     int max() default 1;
 
-    /**
-     * <p>
-     *     Use isPermission from CommandContext Class.
-     * </p>
-     *
-     * @return perm
-     */
-    
-    String perm() default "";
 
-    
+
     boolean console() default false;
 
-    
     boolean tab() default false;
+
+    String fallbackPrefix() default "";
+
 
 }

@@ -1,6 +1,5 @@
 package dev.echo.utils.spigot.api;
 
-import dev.echo.utils.enums.SkinIDS;
 import dev.echo.utils.general.Color;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +27,6 @@ public class CommandMethodHandler {
 
 
     private static final HashMap<String, Object[]> commandMap = new HashMap<>();
-
     @Getter
     @Setter
     private static Class<?> tabHandler;
@@ -41,10 +39,27 @@ public class CommandMethodHandler {
         for (Class<?> a : new Reflections(pack, new SubTypesScanner(false)).getSubTypesOf(Object.class)) {
             System.out.println(a.getSimpleName());
             for (Method method : a.getDeclaredMethods()) {
-                if (method.getDeclaredAnnotation(Command.class) == null) {
+                if (method.getDeclaredAnnotation(dev.echo.utils.spigot.api.annotations.Command.class) == null) {
                     continue;
                 }
-                Command command = method.getDeclaredAnnotation(Command.class);
+                dev.echo.utils.spigot.api.annotations.Command command = method.getDeclaredAnnotation(dev.echo.utils.spigot.api.annotations.Command.class);
+                commandMap.put(command.aliases()[0], new Object[]{command, method});
+            }
+        }
+        registerCommands(fall);
+    }
+    @SneakyThrows
+    @SuppressWarnings("deprecation")
+    public static void getCommands(String fall) {
+        System.out.println("This method was called");
+
+        for (Class<?> a : new Reflections(new SubTypesScanner(false)).getSubTypesOf(Object.class)) {
+            System.out.println(a.getSimpleName());
+            for (Method method : a.getDeclaredMethods()) {
+                if (method.getDeclaredAnnotation(dev.echo.utils.spigot.api.annotations.Command.class) == null) {
+                    continue;
+                }
+                dev.echo.utils.spigot.api.annotations.Command command = method.getDeclaredAnnotation(dev.echo.utils.spigot.api.annotations.Command.class);
                 commandMap.put(command.aliases()[0], new Object[]{command, method});
             }
         }
@@ -57,9 +72,10 @@ public class CommandMethodHandler {
         commandMap.forEach((s, adventureCommand) ->
         {
             try {
+                String fallback = ((dev.echo.utils.spigot.api.annotations.Command)adventureCommand[0]).fallbackPrefix().isEmpty() ? fall : ((dev.echo.utils.spigot.api.annotations.Command)adventureCommand[0]).fallbackPrefix();
                 ((CommandMap) getCraftBukkitClass("CraftServer")
-                        .cast(Bukkit.getServer()).getClass().getMethod("getCommandMap").invoke(Bukkit.getServer())).register(fall,
-                        new CommandClass((Command) adventureCommand[0], (Method) adventureCommand[1]));
+                        .cast(Bukkit.getServer()).getClass().getMethod("getCommandMap").invoke(Bukkit.getServer())).register(fallback,
+                        new CommandClass((dev.echo.utils.spigot.api.annotations.Command) adventureCommand[0], (Method) adventureCommand[1]));
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
@@ -73,14 +89,14 @@ public class CommandMethodHandler {
     private static final class CommandClass extends org.bukkit.command.Command {
 
 
-        private final Command commandAnn;
+        private final dev.echo.utils.spigot.api.annotations.Command commandAnn;
         private final Method method;
 
         private final HashMap<String, Method> methodCache = new HashMap<>();
         private final HashMap<String, Object> cacheClass = new HashMap<>();
 
         @SneakyThrows
-        private CommandClass(Command commandAnn, Method method) {
+        private CommandClass(dev.echo.utils.spigot.api.annotations.Command commandAnn, Method method) {
 
 
             super(commandAnn.aliases()[0], commandAnn.desc(),

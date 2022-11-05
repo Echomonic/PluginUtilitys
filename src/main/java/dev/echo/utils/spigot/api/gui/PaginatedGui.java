@@ -38,6 +38,7 @@ public abstract class PaginatedGui extends Gui {
     }
 
     protected int[] arrows = new int[]{48, 50};
+    protected Material[] arrowMaterials = new Material[]{Material.ARROW,Material.ARROW};
 
     private int closeButton = 49;
 
@@ -127,9 +128,9 @@ public abstract class PaginatedGui extends Gui {
                 getInventory().addItem(items.get(index));
             }
         }
-        setItem(arrows[0], ItemBuilder.build(Material.ARROW, itemBuilder -> {
-            if (page == 0) itemBuilder.setDisplayName("First page");
-            else itemBuilder.setDisplayName("<-- Back a Page");
+        setItem(arrows[0], ItemBuilder.build(arrowMaterials[0], itemBuilder -> {
+            if (page == 0) itemBuilder.setDisplayName("&cFirst page");
+            else itemBuilder.setDisplayName("&a<-- Back a Page");
 
             itemBuilder.addItemFlags(ItemFlag.values());
         }));
@@ -138,9 +139,9 @@ public abstract class PaginatedGui extends Gui {
                 itemBuilder.setDisplayName("&cClose");
                 itemBuilder.addItemFlags(ItemFlag.values());
             }));
-        setItem(arrows[1], ItemBuilder.build(Material.ARROW, itemBuilder -> {
-            if (((index + 1) >= items.size())) itemBuilder.setDisplayName("Last page");
-            else itemBuilder.setDisplayName("Next Page -->");
+        setItem(arrows[1], ItemBuilder.build(arrowMaterials[1], itemBuilder -> {
+            if (((index + 1) >= items.size())) itemBuilder.setDisplayName("&cLast page");
+            else itemBuilder.setDisplayName("&aNext Page -->");
             itemBuilder.addItemFlags(ItemFlag.values());
         }));
     }

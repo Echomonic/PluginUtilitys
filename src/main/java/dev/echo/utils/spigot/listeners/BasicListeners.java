@@ -3,11 +3,12 @@ package dev.echo.utils.spigot.listeners;
 import dev.echo.utils.spigot.api.gui.Gui;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 
-public class BasicListeners {
+public class BasicListeners implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
@@ -21,9 +22,6 @@ public class BasicListeners {
             Gui gui = (Gui) inventory.getHolder();
             gui.click(event);
         }
-
-
-
     }
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event){

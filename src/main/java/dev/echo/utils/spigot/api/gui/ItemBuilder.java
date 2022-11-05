@@ -2,6 +2,7 @@ package dev.echo.utils.spigot.api.gui;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import lombok.SneakyThrows;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -15,6 +16,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -230,6 +232,12 @@ public class ItemBuilder {
     public ItemBuilder addItemFlags(ItemFlag... flag) {
         ItemMeta meta = getItemMeta();
         meta.addItemFlags(flag);
+        setItemMeta(meta);
+        return this;
+    }
+    public ItemBuilder setCustomModelData(int modelData){
+        ItemMeta meta = getItemMeta();
+        meta.setCustomModelData(modelData);
         setItemMeta(meta);
         return this;
     }

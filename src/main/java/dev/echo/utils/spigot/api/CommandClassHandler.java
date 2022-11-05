@@ -1,6 +1,7 @@
 package dev.echo.utils.spigot.api;
 
 import dev.echo.utils.general.Color;
+import dev.echo.utils.spigot.api.annotations.Command;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
