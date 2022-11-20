@@ -1,6 +1,8 @@
 package dev.echo.utils.spigot.reflection;
 
+import net.minecraft.network.protocol.Packet;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 public class PacketUtil {
@@ -16,7 +18,15 @@ public class PacketUtil {
             e.printStackTrace();
         }
     }
-
+    public static void sendPacket(Object packet){
+        for(Player player : Bukkit.getOnlinePlayers()) sendPacket(player,packet);
+    }
+    public static void sendPacketNotFor(Player player, Object packet){
+        for (Player targets : Bukkit.getOnlinePlayers()) {
+            if (targets.getUniqueId().toString().equals(player.getUniqueId().toString())) continue;
+            sendPacket(targets,packet);
+        }
+    }
     public static Class<?> getNMSClass(String name) {
         String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         try {
