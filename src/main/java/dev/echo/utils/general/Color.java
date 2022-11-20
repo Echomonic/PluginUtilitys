@@ -18,10 +18,10 @@ import static dev.echo.utils.spigot.reflection.ReflectionUtils.sendPacket;
 
 public class Color {
     public static String c(String msg) {
-        if(MinecraftVersion.getSubVersion() >= 16){
-            return translateColorStrings(translateColorCodes(msg));
-        }
-        return ChatColor.translateAlternateColorCodes('&',translateColorStrings(msg));
+        if (MinecraftVersion.getSubVersion() >= 16) {
+            return translateColorCodes(translateColorStrings(msg));
+        } else
+            return ChatColor.translateAlternateColorCodes('&', translateColorStrings(msg));
     }
 
     public static String c(String msg, Object... objs) {
@@ -93,6 +93,7 @@ public class Color {
     }
 
     static public final String WITH_DELIMITER = "((?<=%1$s)|(?=%1$s))";
+
     private static String translateColorCodes(String text) {
 
         String[] texts = text.split(String.format(WITH_DELIMITER, "&"));
