@@ -10,7 +10,7 @@ public class PacketUtil {
     public static void sendPacket(Player player, Object packet) {
         try {
             Object handle  = player.getClass().getMethod("getHandle").invoke(player);
-            Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
+            Object playerConnection = ReflectionUtils.getConnection(player);
             playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
 
 
