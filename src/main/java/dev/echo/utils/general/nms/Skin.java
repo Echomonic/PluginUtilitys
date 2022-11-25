@@ -49,8 +49,21 @@ public class Skin {
         this.data = sigData[0];
         this.signature = sigData[1];
     }
-
+    public Skin(String name){
+        this.name = name;
+        this.data = grabSkinFromName(name)[0];
+        this.signature = grabSkinFromName(name)[1];
+    }
     public void assign(Player player) {
+        if (player == null || !player.isOnline()) {
+            Logger.log(LogLevel.ERROR, "Couldn't find player");
+            return;
+        }
+        if(name != null || !name.isEmpty()){
+            setSkin(player);
+        }
+    }
+    public void assign(Player player,String name) {
         if (player == null || !player.isOnline()) {
             Logger.log(LogLevel.ERROR, "Couldn't find player");
             return;
@@ -133,5 +146,15 @@ public class Skin {
         player.setSprinting(sprinting);
         player.updateInventory();
         player.getInventory().setHeldItemSlot(slot);
+    }
+    String[] grabSkinFromName(String name){
+        SkinSetter setter = new SkinSetter();
+        String uuidData = setter.get("https://api.mojang.com/users/profiles/minecraft/%s", name);
+        String uuid = setter.getUUID(uuidData);
+        String skinData = setter.get("https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false", uuid);
+        String skin = setter.getSkin(skinData);
+        String signature = setter.getSig(skinData);
+
+        return new String[]{skin,signature};
     }
 }
