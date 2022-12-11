@@ -1,4 +1,4 @@
-package dev.echo.utils.spigot.api.gui;
+package dev.echo.utils.spigot.gui;
 
 public enum Size {
 

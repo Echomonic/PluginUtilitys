@@ -1,6 +1,6 @@
 package dev.echo.utils.spigot.listeners;
 
-import dev.echo.utils.spigot.api.gui.Gui;
+import dev.echo.utils.spigot.gui.Gui;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

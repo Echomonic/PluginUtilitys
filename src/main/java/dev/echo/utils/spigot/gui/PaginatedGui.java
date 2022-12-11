@@ -1,4 +1,4 @@
-package dev.echo.utils.spigot.api.gui;
+package dev.echo.utils.spigot.gui;
 
 import dev.echo.utils.general.Color;
 import lombok.AccessLevel;

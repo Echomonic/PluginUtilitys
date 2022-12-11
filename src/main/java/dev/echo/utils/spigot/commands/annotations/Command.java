@@ -1,4 +1,4 @@
-package dev.echo.utils.spigot.api.annotations;
+package dev.echo.utils.spigot.commands.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

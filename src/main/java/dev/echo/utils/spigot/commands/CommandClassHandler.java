@@ -1,7 +1,7 @@
-package dev.echo.utils.spigot.api;
+package dev.echo.utils.spigot.commands;
 
 import dev.echo.utils.general.Color;
-import dev.echo.utils.spigot.api.annotations.Command;
+import dev.echo.utils.spigot.commands.annotations.Command;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -85,12 +85,11 @@ public class CommandClassHandler {
             super(commandAnn.aliases()[0], commandAnn.desc(),
                     "/" + commandAnn.aliases()[0], Arrays.asList(commandAnn.aliases()));
 
-
             this.commandAnn = commandAnn;
-            this.method = method;
 
             methodCache.put(commandAnn.aliases()[0], method);
             cacheClass.put(commandAnn.aliases()[0], method.getDeclaringClass().getConstructor().newInstance());
+            this.method = methodCache.get(commandAnn.aliases()[0]);
         }
 
 

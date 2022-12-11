@@ -1,4 +1,4 @@
-package dev.echo.utils.spigot.api.gui;
+package dev.echo.utils.spigot.gui;
 
 import dev.echo.utils.general.Color;
 import org.bukkit.Bukkit;
@@ -107,7 +107,30 @@ public abstract class Gui implements InventoryHolder {
     public int getSlots() {
         return sizeAsSlots;
     }
+    /**
+     * If the item at the current index is not null, continue to the next index.
+     *
+     * @return The number of empty slots in the inventory.
+     */
+    public int getNonTakenSlots(){
+        int newSizeAsSlots = 0;
+        for(int i = 0; i < sizeAsSlots; i++){
+            if(getItem(i) != null) continue;
+            newSizeAsSlots++;
+        }
 
+        return newSizeAsSlots;
+    }
+    /**
+     * This function returns the item in the inventory at the specified index.
+     *
+     * @param i The slot number to get the item from.
+     * @return The item in the inventory at the index i.
+     */
+    public ItemStack getItem(int i){
+
+        return inventory.getItem(i);
+    }
     /**
      * @param startingSlot where is starts filling the slots with the list of items/itemStacks
      * @param itemStacks   the items that are going to be put in the gui and go through the slots.

@@ -3,7 +3,7 @@ package dev.echo.utils.spigot.tab;
 
 
 
-import dev.echo.utils.spigot.api.CommandContext;
+import dev.echo.utils.spigot.commands.CommandContext;
 
 import java.util.List;
 

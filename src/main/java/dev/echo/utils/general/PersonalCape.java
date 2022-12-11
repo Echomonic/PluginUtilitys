@@ -12,21 +12,7 @@ import java.util.regex.Pattern;
 public class PersonalCape {
 
     public static String getCape(Player player){
-        SkinSetter setter = new SkinSetter();
-
-
-        String uuidData = setter.get("https://api.mojang.com/users/profiles/minecraft/%s" , player.getName());
-        String uuid = setter.getUUID(uuidData);
-        String skinData = setter.get("https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false" , uuid);
-        String skin = setter.getSkin(skinData);
-        byte[] bytes = Base64.getDecoder().decode(skin);
-        String decoded = new String(bytes);
-
-        List<String> extracted = extractUrls(decoded);
-        if(extracted.size() <= 1){
-            return "";
-        }
-        return extractUrls(decoded).get(1);
+        return getCape(player.getName());
     }
     public static String getCape(String name){
         SkinSetter setter = new SkinSetter();

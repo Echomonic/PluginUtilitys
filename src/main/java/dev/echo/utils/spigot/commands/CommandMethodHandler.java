@@ -1,4 +1,4 @@
-package dev.echo.utils.spigot.api;
+package dev.echo.utils.spigot.commands;
 
 import dev.echo.utils.general.Color;
 import lombok.Getter;
@@ -39,10 +39,10 @@ public class CommandMethodHandler {
         for (Class<?> a : new Reflections(pack, new SubTypesScanner(false)).getSubTypesOf(Object.class)) {
             System.out.println(a.getSimpleName());
             for (Method method : a.getDeclaredMethods()) {
-                if (method.getDeclaredAnnotation(dev.echo.utils.spigot.api.annotations.Command.class) == null) {
+                if (method.getDeclaredAnnotation(dev.echo.utils.spigot.commands.annotations.Command.class) == null) {
                     continue;
                 }
-                dev.echo.utils.spigot.api.annotations.Command command = method.getDeclaredAnnotation(dev.echo.utils.spigot.api.annotations.Command.class);
+                dev.echo.utils.spigot.commands.annotations.Command command = method.getDeclaredAnnotation(dev.echo.utils.spigot.commands.annotations.Command.class);
                 commandMap.put(command.aliases()[0], new Object[]{command, method});
             }
         }
@@ -56,10 +56,10 @@ public class CommandMethodHandler {
         for (Class<?> a : new Reflections(new SubTypesScanner(false)).getSubTypesOf(Object.class)) {
             System.out.println(a.getSimpleName());
             for (Method method : a.getDeclaredMethods()) {
-                if (method.getDeclaredAnnotation(dev.echo.utils.spigot.api.annotations.Command.class) == null) {
+                if (method.getDeclaredAnnotation(dev.echo.utils.spigot.commands.annotations.Command.class) == null) {
                     continue;
                 }
-                dev.echo.utils.spigot.api.annotations.Command command = method.getDeclaredAnnotation(dev.echo.utils.spigot.api.annotations.Command.class);
+                dev.echo.utils.spigot.commands.annotations.Command command = method.getDeclaredAnnotation(dev.echo.utils.spigot.commands.annotations.Command.class);
                 commandMap.put(command.aliases()[0], new Object[]{command, method});
             }
         }
@@ -72,10 +72,10 @@ public class CommandMethodHandler {
         commandMap.forEach((s, adventureCommand) ->
         {
             try {
-                String fallback = ((dev.echo.utils.spigot.api.annotations.Command)adventureCommand[0]).fallbackPrefix().isEmpty() ? fall : ((dev.echo.utils.spigot.api.annotations.Command)adventureCommand[0]).fallbackPrefix();
+                String fallback = ((dev.echo.utils.spigot.commands.annotations.Command)adventureCommand[0]).fallbackPrefix().isEmpty() ? fall : ((dev.echo.utils.spigot.commands.annotations.Command)adventureCommand[0]).fallbackPrefix();
                 ((CommandMap) getCraftBukkitClass("CraftServer")
                         .cast(Bukkit.getServer()).getClass().getMethod("getCommandMap").invoke(Bukkit.getServer())).register(fallback,
-                        new CommandClass((dev.echo.utils.spigot.api.annotations.Command) adventureCommand[0], (Method) adventureCommand[1]));
+                        new CommandClass((dev.echo.utils.spigot.commands.annotations.Command) adventureCommand[0], (Method) adventureCommand[1]));
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
@@ -89,14 +89,14 @@ public class CommandMethodHandler {
     private static final class CommandClass extends org.bukkit.command.Command {
 
 
-        private final dev.echo.utils.spigot.api.annotations.Command commandAnn;
+        private final dev.echo.utils.spigot.commands.annotations.Command commandAnn;
         private final Method method;
 
         private final HashMap<String, Method> methodCache = new HashMap<>();
         private final HashMap<String, Object> cacheClass = new HashMap<>();
 
         @SneakyThrows
-        private CommandClass(dev.echo.utils.spigot.api.annotations.Command commandAnn, Method method) {
+        private CommandClass(dev.echo.utils.spigot.commands.annotations.Command commandAnn, Method method) {
 
 
             super(commandAnn.aliases()[0], commandAnn.desc(),

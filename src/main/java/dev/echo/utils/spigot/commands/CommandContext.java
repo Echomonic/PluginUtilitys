@@ -1,4 +1,4 @@
-package dev.echo.utils.spigot.api;
+package dev.echo.utils.spigot.commands;
 
 import lombok.Getter;
 import lombok.Setter;
