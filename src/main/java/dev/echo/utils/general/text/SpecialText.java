@@ -120,19 +120,18 @@ public class SpecialText {
             char letters = chars[i];
             String letter = Character.toString(letters);
 
-            if (letter.equalsIgnoreCase(" ")) {
-            } else {
+            if (!letter.equalsIgnoreCase(" ")) {
+
                 String beforeLetter = Character.toString(i - 1 < 0 ? chars[0] : chars[i - 1]);
                 String currentLetter = Character.toString(chars[i]);
 
                 if (beforeLetter.equalsIgnoreCase("&")) {
                     if (currentLetter.equalsIgnoreCase("#")) {
                         List<Character> characters = new ArrayList<>();
-                        int tempI = i;
                         for (int x = 0; x < 7; x++) {
-                            if (chars[tempI + x] != chars.length) {
-                                characters.add(chars[tempI + x]);
-                                System.out.println(chars[tempI + x]);
+                            if (chars[i + x] != chars.length) {
+                                characters.add(chars[i + x]);
+                                System.out.println(chars[i + x]);
                             }
                         }
                         String constructed = constructString(characters);

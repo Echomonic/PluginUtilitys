@@ -1,6 +1,8 @@
 package dev.echo.utils.spigot.gui;
 
 import dev.echo.utils.general.Color;
+import dev.echo.utils.general.PluginInstance;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PrimitiveIterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
 public abstract class Gui implements InventoryHolder {
@@ -31,6 +34,9 @@ public abstract class Gui implements InventoryHolder {
 
     private boolean isRinged = false;
     private boolean isFilled = false;
+    private Size ringedSize;
+
+    private int nonTakenSlots;
 
     /**
      * This also creates the gui.
@@ -44,6 +50,7 @@ public abstract class Gui implements InventoryHolder {
         this.slots = slots;
         inventory = Bukkit.createInventory(this, slots.getGuiSize(), Color.c(title));
         handle();
+        ringedSize = slots;
     }
 
 
@@ -107,19 +114,35 @@ public abstract class Gui implements InventoryHolder {
     public int getSlots() {
         return sizeAsSlots;
     }
-    /**
-     * If the item at the current index is not null, continue to the next index.
-     *
-     * @return The number of empty slots in the inventory.
-     */
-    public int getNonTakenSlots(){
-        int newSizeAsSlots = 0;
-        for(int i = 0; i < sizeAsSlots; i++){
-            if(getItem(i) != null) continue;
-            newSizeAsSlots++;
-        }
 
-        return newSizeAsSlots;
+    /**
+     * If the item is not null, then increment the newSizeAsSlots variable.
+     */
+    public void updateNonTakenSlots() {
+        AtomicInteger newSizeAsSlots = new AtomicInteger();
+        for (int i = 0; i < sizeAsSlots; i++) {
+            if (getItem(i) != null) continue;
+            newSizeAsSlots.getAndIncrement();
+        }
+        this.nonTakenSlots = newSizeAsSlots.get();
+    }
+    public int getNonTakenSlots(){
+        AtomicInteger newSizeAsSlots = new AtomicInteger();
+        Bukkit.getScheduler().runTaskLaterAsynchronously(PluginInstance.getSpigotClass(),() ->{
+            for(int i = 0; i < sizeAsSlots; i++){
+                if(getItem(i) != null) continue;
+                newSizeAsSlots.getAndIncrement();
+            }
+        },0);
+        return newSizeAsSlots.get();
+    }
+    public List<Integer> getNonTakenSlotsArray() {
+        List<Integer> freeSlots = new ArrayList<>();
+        for (int i = 0; i < sizeAsSlots; i++) {
+            if (getItem(i) != null) continue;
+            freeSlots.add(i);
+        }
+        return freeSlots;
     }
     /**
      * This function returns the item in the inventory at the specified index.
@@ -127,10 +150,11 @@ public abstract class Gui implements InventoryHolder {
      * @param i The slot number to get the item from.
      * @return The item in the inventory at the index i.
      */
-    public ItemStack getItem(int i){
+    public ItemStack getItem(int i) {
 
         return inventory.getItem(i);
     }
+
     /**
      * @param startingSlot where is starts filling the slots with the list of items/itemStacks
      * @param itemStacks   the items that are going to be put in the gui and go through the slots.
@@ -153,7 +177,7 @@ public abstract class Gui implements InventoryHolder {
 
     public abstract void click(InventoryClickEvent event);
 
-    protected boolean isItemNull(ItemStack stack){
+    protected boolean isItemNull(ItemStack stack) {
 
 
         return stack == null || stack.getType() == Material.AIR;
@@ -207,7 +231,8 @@ public abstract class Gui implements InventoryHolder {
 
         return x;
     }
-    public void close(InventoryCloseEvent event){
+
+    public void close(InventoryCloseEvent event) {
     }
 
     /**
@@ -242,7 +267,10 @@ public abstract class Gui implements InventoryHolder {
     protected void setItem(int slot, ItemStack stack) {
         inventory.setItem(slot, stack);
     }
-
+    protected void setItemWithUpdate(int slot, ItemStack stack) {
+        inventory.setItem(slot, stack);
+        updateNonTakenSlots();
+    }
     protected void setItems(int slot, List<ItemStack> stack) {
         for (ItemStack itemStack : stack) {
             inventory.setItem(slot, itemStack);
@@ -343,6 +371,7 @@ public abstract class Gui implements InventoryHolder {
                 break;
         }
         this.isRinged = true;
+        ringedSize = size;
     }
 
     protected void ringInventory(GlassType type) {
@@ -398,6 +427,7 @@ public abstract class Gui implements InventoryHolder {
                 }
                 break;
         }
+        ringedSize = size;
     }
 
     protected void forceRingInventory(GlassType type) {
@@ -447,6 +477,7 @@ public abstract class Gui implements InventoryHolder {
                 }
                 break;
         }
+        ringedSize = size;
     }
 
     /**

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -136,18 +137,10 @@ public class CommandMethodHandler {
 
         @SneakyThrows
         private List<String> tab(CommandContext context) {
-            Class<?> baseClass = method.getDeclaringClass();
-            for (Method tabMethods : tabHandler.getMethods()) {
-                tabMethods.setAccessible(true);
-                String tabName = tabMethods.getName();
-                for (Method methods : baseClass.getDeclaredMethods()) {
-                    methods.setAccessible(true);
-                    String name = methods.getName();
-                    if (tabName.equals(name))
-                        return (List<String>) tabMethods.invoke(tabHandler.getConstructor().newInstance(), context);
-                    methods.setAccessible(false);
-                }
-                tabMethods.setAccessible(false);
+            Method commandMethod = methodCache.get(commandAnn.aliases()[0]);
+            if(tabHandler.getDeclaredMethod(commandMethod.getName(),CommandContext.class) != null){
+                Method tabMethod = tabHandler.getDeclaredMethod(commandMethod.getName(), CommandContext.class);
+                return (List<String>) tabMethod.invoke(tabHandler.getConstructor().newInstance(),context);
             }
             return new ArrayList<>();
         }

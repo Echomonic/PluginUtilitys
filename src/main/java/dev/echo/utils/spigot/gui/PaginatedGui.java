@@ -25,7 +25,7 @@ public abstract class PaginatedGui extends Gui {
 
     public PaginatedGui(String title, Size slots) {
         super(title, slots);
-        this.setArrows(slots,true);
+        this.setArrows(slots, true);
     }
 
 
@@ -33,12 +33,13 @@ public abstract class PaginatedGui extends Gui {
     public void open(Player player) {
         Inventory inventory = this.getInventory();
         inventory.clear();
+        applyPlaceHolders();
+        updateNonTakenSlots();
         this.a();
         super.open(player);
     }
-
     protected int[] arrows = new int[]{48, 50};
-    protected Material[] arrowMaterials = new Material[]{Material.ARROW,Material.ARROW};
+    protected Material[] arrowMaterials = new Material[]{Material.ARROW, Material.ARROW};
 
     private int closeButton = 49;
 
@@ -60,31 +61,31 @@ public abstract class PaginatedGui extends Gui {
 
             case SIZE_18:
                 this.arrows = new int[]{12, 14};
-                if(includeCloseButton)
+                if (includeCloseButton)
                     closeButton = 13;
                 break;
 
             case SIZE_27:
-                this.arrows = new int[]{20,22};
-                if(includeCloseButton)
+                this.arrows = new int[]{20, 22};
+                if (includeCloseButton)
                     closeButton = 21;
                 break;
 
             case SIZE_36:
-                this.arrows = new int[]{30,32};
-                if(includeCloseButton)
+                this.arrows = new int[]{30, 32};
+                if (includeCloseButton)
                     closeButton = 31;
                 break;
 
             case SIZE_45:
-                this.arrows = new int[]{39,41};
-                if(includeCloseButton)
+                this.arrows = new int[]{39, 41};
+                if (includeCloseButton)
                     closeButton = 40;
                 break;
 
             case SIZE_54:
                 this.arrows = new int[]{48, 50};
-                if(includeCloseButton)
+                if (includeCloseButton)
                     closeButton = 49;
                 break;
 
@@ -119,13 +120,24 @@ public abstract class PaginatedGui extends Gui {
         return slot == arrows[0] || slot == arrows[1] || slot == closeButton;
     }
 
+    @Override
+    public void ringInventory(GlassType type){
+        super.ringInventory(type);
+    }
+
+    @Override
+    protected void forceRingInventory(GlassType type) {
+        super.forceRingInventory(type);
+    }
+
     protected void a() {
-        int maxItems = this.getSlots();
+        applyPlaceHolders();
+        int maxItems = this.getNonTakenSlots();
         for (int i = 0; i < maxItems; i++) {
             index = maxItems * page + i;
             if (index >= items.size()) break;
             if (items.get(index) != null) {
-                getInventory().addItem(items.get(index));
+                addItem(items.get(index));
             }
         }
         setItem(arrows[0], ItemBuilder.build(arrowMaterials[0], itemBuilder -> {
@@ -140,6 +152,25 @@ public abstract class PaginatedGui extends Gui {
                 itemBuilder.addItemFlags(ItemFlag.values());
             }));
         setItem(arrows[1], ItemBuilder.build(arrowMaterials[1], itemBuilder -> {
+            if (((index + 1) >= items.size())) itemBuilder.setDisplayName("&cLast page");
+            else itemBuilder.setDisplayName("&aNext Page -->");
+            itemBuilder.addItemFlags(ItemFlag.values());
+        }));
+    }
+
+    protected void applyPlaceHolders() {
+        setItemWithUpdate(arrows[0], ItemBuilder.build(arrowMaterials[0], itemBuilder -> {
+            if (page == 0) itemBuilder.setDisplayName("&cFirst page");
+            else itemBuilder.setDisplayName("&a<-- Back a Page");
+
+            itemBuilder.addItemFlags(ItemFlag.values());
+        }));
+        if (includeCloseButton)
+            setItemWithUpdate(closeButton, ItemBuilder.build(Material.BARRIER, itemBuilder -> {
+                itemBuilder.setDisplayName("&cClose");
+                itemBuilder.addItemFlags(ItemFlag.values());
+            }));
+        setItemWithUpdate(arrows[1], ItemBuilder.build(arrowMaterials[1], itemBuilder -> {
             if (((index + 1) >= items.size())) itemBuilder.setDisplayName("&cLast page");
             else itemBuilder.setDisplayName("&aNext Page -->");
             itemBuilder.addItemFlags(ItemFlag.values());
