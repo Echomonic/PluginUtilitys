@@ -2,10 +2,13 @@ package dev.echo.utils.bungee.api;
 
 import dev.echo.utils.general.PluginInstance;
 import dev.echo.utils.general.Color;
+import dev.echo.utils.spigot.commands.CommandContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.TabExecutor;
 import org.bukkit.entity.Player;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -59,7 +62,7 @@ public class BungeeCommandMethodHandler {
         PluginInstance.getBungeeClass().getProxy().getPluginManager().unregisterListeners(PluginInstance.getBungeeClass());
     }
 
-    private static final class CommandClass extends Command {
+    private static final class CommandClass extends Command implements TabExecutor {
 
 
         private final BungeeCommand commandAnn;
@@ -96,6 +99,7 @@ public class BungeeCommandMethodHandler {
         }
 
 
+
         @SneakyThrows
         private void command(BungeeContext context) {
             method.setAccessible(true);
@@ -106,18 +110,10 @@ public class BungeeCommandMethodHandler {
 
         @SneakyThrows
         private List<String> tab(BungeeContext context) {
-            Class<?> baseClass = method.getDeclaringClass();
-            for (Method tabMethods : tabHandler.getMethods()) {
-                tabMethods.setAccessible(true);
-                String tabName = tabMethods.getName();
-                for (Method methods : baseClass.getDeclaredMethods()) {
-                    methods.setAccessible(true);
-                    String name = methods.getName();
-                    if (tabName.equals(name))
-                        return (List<String>) tabMethods.invoke(tabHandler.getConstructor().newInstance(), context);
-                    methods.setAccessible(false);
-                }
-                tabMethods.setAccessible(false);
+            Method commandMethod = methodCache.get(commandAnn.aliases()[0]);
+            if(tabHandler.getDeclaredMethod(commandMethod.getName(),BungeeContext.class) != null){
+                Method tabMethod = tabHandler.getDeclaredMethod(commandMethod.getName(), BungeeContext.class);
+                return (List<String>) tabMethod.invoke(tabHandler.getConstructor().newInstance(),context);
             }
             return new ArrayList<>();
         }
@@ -136,6 +132,14 @@ public class BungeeCommandMethodHandler {
         }
 
 
+        @Override
+        public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+            BungeeContext context = new BungeeContext(sender, args);
+            context.setMax(commandAnn.max());
+            context.setMin(commandAnn.min());
+
+            return this.commandAnn.tab() ? tab(context) : () -> null;
+        }
     }
 
 }

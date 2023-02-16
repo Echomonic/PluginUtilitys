@@ -6,6 +6,7 @@ import dev.echo.utils.general.Color;
 import dev.echo.utils.general.logger.LogLevel;
 import dev.echo.utils.general.logger.Logger;
 import dev.echo.utils.spigot.player.SkinSetter;
+import dev.echo.utils.spigot.reflection.MinecraftVersion;
 import dev.echo.utils.spigot.reflection.PacketUtil;
 import io.netty.handler.codec.DecoderException;
 import lombok.Getter;
@@ -73,6 +74,10 @@ public class Skin {
         }
     }
     private void setSkin(Player player){
+        if(MinecraftVersion.getSubVersion() != 19){
+            System.out.println("This function currently only supports 1.19.");
+            return;
+        }
         try {
 
             CraftPlayer cp = ((CraftPlayer) player);
